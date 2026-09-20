@@ -58,10 +58,14 @@ function ChatWindow() {
     try {
       // ensure our backend is run, then response will come
       // const response = await fetch("http://localhost:8080/api/chat", options);
-      const response = await fetch(
-        "https://stackmind-4yin.onrender.com/api/chat",
-        options,
-      );
+
+      // const response = await fetch(
+      //   "https://stackmind-4yin.onrender.com/api/chat",
+      //   options,
+      // );
+
+      const response = await fetch("/api/chat", options);
+
       const res = await response.json();
       console.log(res);
       setReply(res.reply);

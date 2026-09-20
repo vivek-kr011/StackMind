@@ -25,10 +25,15 @@ const LoginForm = () => {
     e.preventDefault();
     setErrorMsg("");
 
+    // const url =
+    //   authMode === "Login"
+    //     ? "https://stackmind-4yin.onrender.com/api/auth/login"
+    //     : "https://stackmind-4yin.onrender.com/api/auth/signup";
+
     const url =
       authMode === "Login"
-        ? "https://stackmind-4yin.onrender.com/api/auth/login"
-        : "https://stackmind-4yin.onrender.com/api/auth/signup";
+        ? "/api/auth/login"
+        : "/api/auth/signup";
 
     const bodyData =
       authMode === "Login" ? { email, password } : { name, email, password };

@@ -1,0 +1,18 @@
+services:
+  backend:
+    build:
+      context: ./Backend
+    env_file:
+      - ./Backend/.env
+    expose:
+      - "8080"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./Frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped

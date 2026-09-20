@@ -27,7 +27,9 @@ function Sidebar() {
 
     try {
       // const response = await fetch("http://localhost:8080/api/thread", {
-      const response = await fetch("https://stackmind-4yin.onrender.com/api/thread", {
+      // const response = await fetch("https://stackmind-4yin.onrender.com/api/thread", {
+
+      const response = await fetch("/api/thread", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -72,7 +74,8 @@ function Sidebar() {
     try {
       const response = await fetch(
         // `http://localhost:8080/api/thread/${newThreadId}`,
-        `https://stackmind-4yin.onrender.com/api/thread/${newThreadId}`,
+        // `https://stackmind-4yin.onrender.com/api/thread/${newThreadId}`,
+        `/api/thread/${newThreadId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -101,7 +104,8 @@ function Sidebar() {
     try {
       const response = await fetch(
         // `http://localhost:8080/api/thread/${threadId}`,
-        `https://stackmind-4yin.onrender.com/api/thread/${threadId}`,
+        // `https://stackmind-4yin.onrender.com/api/thread/${threadId}`,
+        `/api/thread/${threadId}`,
         {
           method: "DELETE",
           headers: {
@@ -133,7 +137,7 @@ function Sidebar() {
 
       {/* new chat button */}
       <button onClick={createNewChat}>
-        <img src="src/assets/SM-logo.png" alt="gpt logo" className="logo" />
+        <img src="/SM-logo.png" alt="gpt logo" className="logo" />
         <span>
           {" "}
           <i className="fa-solid fa-pen-to-square"></i>{" "}

@@ -21,7 +21,7 @@ app.use('/api/auth', authRoutes);
 
 app.use("/api", authMiddleware, chatRoutes);
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server Running on ${PORT}`);
   connectDB();
 });

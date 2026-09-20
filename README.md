@@ -41,6 +41,7 @@ A production-grade, thread-based conversational AI chatbot built from scratch wi
 - [Backend Architecture](#-backend-architecture)
 - [Frontend Architecture](#-frontend-architecture)
 - [Installation Guide](#-installation-guide)
+- [Docker Deployment](#-docker-deployment)
 - [Project Structure](#-project-structure)
 - [API Routes Documentation](#-api-routes-documentation)
 - [Performance Optimizations](#-performance-optimizations)
@@ -107,8 +108,8 @@ A production-grade, thread-based conversational AI chatbot built from scratch wi
 | Google Gemini API | Primary AI model | `gemini-2.5-flash` |
 | OpenAI API | Fallback AI | `gpt-4o-mini` |
 
-### Planned DevOps
-Docker · Kubernetes · GitHub Actions CI/CD
+### DevOps
+Docker · Nginx · Docker Compose · Kubernetes · GitHub Actions CI/CD
 
 ---
 
@@ -141,6 +142,39 @@ flowchart TB
     Utils --> Gemini
     Models --> Mongo
 ```
+
+### Production Docker Architecture
+
+The production-style local deployment uses two containers. The frontend image builds the React application with Vite and serves the generated static files through Nginx. Nginx also reverse-proxies `/api/*` requests to the Express backend over the internal Docker network.
+
+MongoDB Atlas and the Gemini API remain external managed services. They are accessed by the backend through environment variables and are not included in the Docker images.
+
+```mermaid
+flowchart LR
+    Browser["Browser<br/>http://localhost:5173"]
+
+    subgraph Docker["Docker Compose Network"]
+        Frontend["Frontend container<br/>Nginx + React dist<br/>Port 80"]
+        Backend["Backend container<br/>Node.js + Express<br/>Port 8080"]
+    end
+
+    Mongo[("MongoDB Atlas")]
+    Gemini[("Google Gemini API")]
+
+    Browser --> Frontend
+    Frontend -->|"/api/* proxy"| Backend
+    Backend --> Mongo
+    Backend --> Gemini
+```
+
+### Request Flow
+
+1. The browser loads the React application from Nginx on port `5173`.
+2. React sends relative requests such as `/api/auth/login`, `/api/thread`, and `/api/chat`.
+3. Nginx forwards those requests to the `backend` Compose service on port `8080`.
+4. Express authenticates the request and executes the route logic.
+5. Mongoose reads and writes user data in MongoDB Atlas.
+6. The chat route calls the Gemini API and returns the assistant response.
 
 ---
 
@@ -271,6 +305,125 @@ curl http://localhost:8080/api/thread
 
 ---
 
+## 🐳 Docker Deployment
+
+This repository includes a production-style Docker Compose deployment with separate frontend and backend containers. The frontend is compiled once with Vite and served by Nginx. The backend runs as a Node.js process and connects to MongoDB Atlas and the Google Gemini API.
+
+### Docker Prerequisites
+
+- Docker Desktop with Docker Compose enabled
+- A MongoDB Atlas connection string
+- A Google Gemini API key
+- A strong JWT signing secret
+- MongoDB Atlas network access configured for the machine or server running the backend
+
+### Environment Configuration
+
+Create `Backend/.env` locally. Do not commit this file or copy it into a Docker image.
+
+```env
+MONGODB_URL=your_mongodb_connection_string
+GEMINI_API_KEY=your_gemini_api_key
+JWT_SECRET=your_long_random_secret
+PORT=8080
+```
+
+The Compose file passes this file to the backend container at runtime. The frontend does not need a secret file because its API requests use relative `/api` paths and are routed by Nginx.
+
+### Docker Files
+
+| File | Responsibility |
+|---|---|
+| `docker-compose.yml` | Defines the frontend and backend services, networking, ports, and startup policy |
+| `Backend/Dockerfile` | Builds the Node.js backend image and runs `npm start` |
+| `Backend/.dockerignore` | Excludes `node_modules`, `.env`, and logs from the backend image context |
+| `Frontend/Dockerfile` | Builds the Vite application and serves it from an Nginx image |
+| `Frontend/.dockerignore` | Excludes local dependencies and generated files from the frontend build context |
+| `Frontend/nginx.conf` | Serves React files and proxies `/api/*` requests to the backend service |
+
+### Build and Start
+
+Run these commands from the repository root, where `docker-compose.yml` is located:
+
+```bash
+# Validate the Compose configuration
+docker compose config
+
+# Build both images
+docker compose build
+
+# Start the application in the background
+docker compose up -d
+
+# Confirm both services are running
+docker compose ps
+```
+
+Open the application at:
+
+```text
+http://localhost:5173
+```
+
+Only the frontend port is published to the host. The backend port `8080` is available to the frontend container through the internal Compose network as `http://backend:8080`.
+
+### Rebuild After Changes
+
+After changing application code, Dockerfiles, or Nginx configuration:
+
+```bash
+docker compose up -d --build
+```
+
+For a clean dependency rebuild:
+
+```bash
+docker compose build --no-cache
+docker compose up -d
+```
+
+### Logs and Verification
+
+```bash
+# View service status
+docker compose ps
+
+# View backend logs
+docker compose logs backend
+
+# View frontend logs
+docker compose logs frontend
+
+# Follow all logs
+docker compose logs -f
+```
+
+Verify the application by signing up, logging in, sending a chat message, loading a previous thread, and deleting a thread. These workflows verify the complete path through Nginx, Express, MongoDB Atlas, and Gemini.
+
+### Stop and Remove Containers
+
+```bash
+# Stop and remove containers and the Compose network
+docker compose down
+
+# Stop, remove containers, and remove locally built images
+docker compose down --rmi local
+```
+
+The deployment does not use a local MongoDB container. User data remains in MongoDB Atlas when the application containers are stopped or rebuilt.
+
+### Production Security Notes
+
+- Rotate any credentials that have been exposed or committed during development.
+- Store production secrets in the deployment platform's secret manager instead of a repository file.
+- Restrict MongoDB Atlas network access to trusted server addresses.
+- Use HTTPS at the infrastructure layer before exposing the application publicly.
+- Restrict CORS to the production frontend origin instead of allowing every origin.
+- Add rate limiting, request validation, structured logging, and a health endpoint before public deployment.
+- Scan and regularly rebuild images to receive current base-image security updates.
+
+---
+
 ## 📁 Project Structure
 
 ```
@@ -373,7 +526,8 @@ StackMind/
 - [ ] Full mobile responsiveness
 - [ ] Full-text thread search
 - [ ] Rate limiting
-- [ ] Docker + Kubernetes deployment
+- [x] Docker deployment
+- [ ] Kubernetes deployment
 - [ ] Redis caching layer
 - [ ] Multi-LLM fallback router (Claude/Grok)
 - [ ] Streaming responses via SSE
