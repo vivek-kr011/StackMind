@@ -3,6 +3,8 @@ import { useContext, useEffect, useCallback, useRef } from "react";
 import { MyContext } from "./MyContext.jsx";
 import { v1 as uuidv1 } from "uuid";
 
+const API_URL = import.meta.env.VITE_API_URL || "https://stackmind-4yin.onrender.com";
+
 function Sidebar() {
   const {
     allThreads,
@@ -37,7 +39,7 @@ function Sidebar() {
       // const response = await fetch("http://localhost:8080/api/thread", {
       // const response = await fetch("https://stackmind-4yin.onrender.com/api/thread", {
 
-      const response = await fetch("/api/thread", {
+      const response = await fetch(`${API_URL}/api/thread`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -85,7 +87,7 @@ function Sidebar() {
       const response = await fetch(
         // `http://localhost:8080/api/thread/${newThreadId}`,
         // `https://stackmind-4yin.onrender.com/api/thread/${newThreadId}`,
-        `/api/thread/${newThreadId}`,
+        `${API_URL}/api/thread/${newThreadId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -115,7 +117,7 @@ function Sidebar() {
       const response = await fetch(
         // `http://localhost:8080/api/thread/${threadId}`,
         // `https://stackmind-4yin.onrender.com/api/thread/${threadId}`,
-        `/api/thread/${threadId}`,
+        `${API_URL}/api/thread/${threadId}`,
         {
           method: "DELETE",
           headers: {

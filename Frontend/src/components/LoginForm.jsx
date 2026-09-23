@@ -1,6 +1,8 @@
 import { useEffect, useState, useContext } from "react";
 import { MyContext } from "../MyContext.jsx";
 
+const API_URL = import.meta.env.VITE_API_URL || "https://stackmind-4yin.onrender.com";
+
 const LoginForm = () => {
   const { loginUser, setShowAuthModal, authMode, setAuthMode } =
     useContext(MyContext);
@@ -32,8 +34,8 @@ const LoginForm = () => {
 
     const url =
       authMode === "Login"
-        ? "/api/auth/login"
-        : "/api/auth/signup";
+        ? `${API_URL}/api/auth/login`
+        : `${API_URL}/api/auth/signup`;
 
     const bodyData =
       authMode === "Login" ? { email, password } : { name, email, password };

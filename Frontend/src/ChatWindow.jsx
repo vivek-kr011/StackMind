@@ -4,6 +4,8 @@ import { MyContext } from "./MyContext.jsx";
 import { useContext, useState, useEffect, useRef } from "react";
 import { ScaleLoader } from "react-spinners";
 
+const API_URL = import.meta.env.VITE_API_URL || "https://stackmind-4yin.onrender.com";
+
 function ChatWindow() {
   const {
     prompt,
@@ -64,7 +66,7 @@ function ChatWindow() {
       //   options,
       // );
 
-      const response = await fetch("/api/chat", options);
+      const response = await fetch(`${API_URL}/api/chat`, options);
 
       const res = await response.json();
       console.log(res);
