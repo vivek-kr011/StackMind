@@ -1,14 +1,14 @@
 .chatWindow {
-    height: 100vh;
     width: 100%;
-    flex: 1;
     min-width: 0;
-    overflow: hidden;
+    height: 100dvh;
+    min-height: 0;
+    flex: 1;
     display: flex;
     flex-direction: column;
-    /* justify-content: space-between;  <-- ise hata dein */
     align-items: stretch;
     text-align: center;
+    overflow: hidden;
 }
 
 .navbar {
@@ -254,4 +254,37 @@ input::placeholder {
     body:has(.sidebarToggle:checked) .sidebarBackdrop {
         display: block;
     }
+}
+
+@media (max-width: 768px) {
+  .chatWindow {
+    height: 100dvh;
+  }
+
+  .navbar {
+    height: 56px;
+  }
+
+  .navbar span {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .userIconDiv {
+    margin: 0 12px;
+  }
+
+  .chats {
+    padding: 1rem 12px;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .chatInput {
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+  }
+
+  .inputBox {
+    max-width: none;
+  }
 }

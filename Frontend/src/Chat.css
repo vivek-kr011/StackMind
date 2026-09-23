@@ -87,3 +87,24 @@ code {
     border-radius: 6px;
     font-size: 13px;
 }
+
+@media (max-width: 768px) {
+  .userMessage {
+    max-width: 90%;
+    padding: 10px 14px;
+  }
+
+  .stackMindDiv {
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+
+  pre {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  code {
+    font-size: 12px;
+  }
+}

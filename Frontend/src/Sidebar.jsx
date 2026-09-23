@@ -1,5 +1,5 @@
 import "./Sidebar.css";
-import { useContext, useEffect, useCallback } from "react";
+import { useContext, useEffect, useCallback, useRef } from "react";
 import { MyContext } from "./MyContext.jsx";
 import { v1 as uuidv1 } from "uuid";
 
@@ -17,6 +17,14 @@ function Sidebar() {
     setShowAuthModal,
     setAuthMode,
   } = useContext(MyContext);
+
+  const sidebarToggleRef = useRef(null);
+
+  const closeSidebar = () => {
+    if (sidebarToggleRef.current) {
+      sidebarToggleRef.current.checked = false;
+    }
+  };
 
   const getAllThreads = useCallback(async () => {
     if (!token) {
@@ -53,6 +61,7 @@ function Sidebar() {
   }, [currThreadId, getAllThreads]);
 
   const createNewChat = () => {
+    closeSidebar();
     setNewChat(true);
     setPrompt("");
     setReply(null);
@@ -62,6 +71,7 @@ function Sidebar() {
 
   // fetch all chat
   const changeThread = async (newThreadId) => {
+    closeSidebar();
     setCurrThreadId(newThreadId); // setCurrThreadId is replace with newThreadId
 
     if (!token) {
@@ -133,7 +143,12 @@ function Sidebar() {
   return (
     <section className="sidebar">
 
-      <input type="checkbox" id="sidebarToggle" className="sidebarToggle" />
+      <input
+        ref={sidebarToggleRef}
+        type="checkbox"
+        id="sidebarToggle"
+        className="sidebarToggle"
+      />
 
       {/* new chat button */}
       <button onClick={createNewChat}>

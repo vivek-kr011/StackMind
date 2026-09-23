@@ -121,7 +121,8 @@
         position: fixed;
         top: 0;
         left: 0;
-        height: 100vh;
+        width: min(280px, 82vw);
+        height: 100dvh;
         z-index: 1000;
         transform: translateX(-100%);
         transition: transform 0.25s ease;
